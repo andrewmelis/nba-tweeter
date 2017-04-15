@@ -43,7 +43,7 @@ func (w *MockGameWatcher) IsWatching(g Game) bool {
 	return true
 }
 
-func (w *MockGameWatcher) Watch(g Game) error {
+func (w *MockGameWatcher) Follow(s Schedule) error {
 	return nil
 }
 
@@ -52,7 +52,7 @@ func TestWatchOneGame(t *testing.T) {
 	schedule := NewMockSchedule([]string{game})
 	watcher := &MockGameWatcher{}
 
-	watchGames(watcher, schedule)
+	watcher.Follow(schedule)
 
 	if len(schedule.ScheduledGames()) != 1 {
 		t.Errorf("schedule not reflecting all games!")
@@ -64,3 +64,5 @@ func TestWatchOneGame(t *testing.T) {
 		}
 	}
 }
+
+// "feature test" -- run and actually tweet, then retrieve tweet via twitter api?

@@ -5,6 +5,8 @@ import (
 )
 
 func main() {
+	// loop here?
+
 	// for all games
 	// watch games
 	// tweet each play
@@ -15,17 +17,10 @@ type Game interface {
 }
 
 type Schedule interface {
-	ScheduledGames() []Game
+	ScheduledGames() []Game // should this return a channel instead?
 }
 
 type GameWatcher interface {
-	Watch(Game) error
+	Follow(Schedule)
 	IsWatching(Game) bool
-}
-
-func watchGames(w GameWatcher, s Schedule) error {
-	for _, game := range s.ScheduledGames() {
-		w.Watch(game) // TODO do something with errors
-	}
-	return nil
 }
