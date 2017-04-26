@@ -2,6 +2,9 @@ package main
 
 import (
 	"testing"
+
+	"github.com/andrewmelis/nba-tweeter/game"
+	"github.com/andrewmelis/nba-tweeter/schedule"
 )
 
 func TestMain(t *testing.T) {
@@ -9,7 +12,7 @@ func TestMain(t *testing.T) {
 }
 
 type MockSchedule struct {
-	Games []Game
+	Games []game.Game
 }
 
 type MockGame struct {
@@ -26,24 +29,24 @@ func NewMockGame(code string) MockGame {
 // }
 
 func NewMockSchedule(gameCodes []string) *MockSchedule {
-	games := []Game{}
+	games := []game.Game{}
 	for _, code := range gameCodes {
 		games = append(games, NewMockGame(code))
 	}
 	return &MockSchedule{Games: games}
 }
 
-func (r *MockSchedule) ScheduledGames() []Game {
+func (r *MockSchedule) ScheduledGames() []game.Game {
 	return r.Games
 }
 
 type MockGameWatcher struct{}
 
-func (w *MockGameWatcher) IsWatching(g Game) bool {
+func (w *MockGameWatcher) IsWatching(g game.Game) bool {
 	return true
 }
 
-func (w *MockGameWatcher) Follow(s Schedule) error {
+func (w *MockGameWatcher) Follow(s schedule.Schedule) error {
 	return nil
 }
 
