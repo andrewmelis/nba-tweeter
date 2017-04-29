@@ -24,7 +24,6 @@ func NewMockGame(code string) MockGame {
 }
 
 func (g MockGame) GameCode() string {
-	// return g.GameCode
 	return ""
 }
 
@@ -40,20 +39,20 @@ func (r *MockSchedule) ScheduledGames() []game.Game {
 	return r.Games
 }
 
-type MockGameWatcher struct{}
+type MockWatcher struct{}
 
-func (w *MockGameWatcher) IsWatching(g game.Game) bool {
+func (w *MockWatcher) IsWatching(g game.Game) bool {
 	return true
 }
 
-func (w *MockGameWatcher) Follow(s schedule.Schedule) error {
+func (w *MockWatcher) Follow(s schedule.Schedule) error {
 	return nil
 }
 
 func TestWatchOneGame(t *testing.T) {
 	game := "CLEGSW"
 	schedule := NewMockSchedule([]string{game})
-	watcher := &MockGameWatcher{}
+	watcher := &MockWatcher{}
 
 	watcher.Follow(schedule)
 
