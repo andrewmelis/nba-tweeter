@@ -47,10 +47,6 @@ func fakeNBAGames(gameCodes ...string) NBAGames {
 	return games
 }
 
-func fakeNBAGame(code string) NBAGame {
-	return NBAGame{Code: code}
-}
-
 func newNBAGameHandlerFunc(g NBAGames) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		enc := json.NewEncoder(w)
