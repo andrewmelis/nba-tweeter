@@ -23,10 +23,10 @@ func NewMockGame(code string) MockGame {
 	return MockGame{Code: code}
 }
 
-// func (g MockGame) GameCode() string {
-// 	// return g.GameCode
-// 	return ""
-// }
+func (g MockGame) GameCode() string {
+	// return g.GameCode
+	return ""
+}
 
 func NewMockSchedule(gameCodes []string) *MockSchedule {
 	games := []game.Game{}
