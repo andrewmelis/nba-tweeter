@@ -11,10 +11,7 @@ import (
 func main() {
 	s := nba.NewDefaultNBASchedule()
 	w := PrintWatcher{}
-	watch(w, s)
-
-	// fmt.Printf("%s\n", s.ScheduledGames())
-	// w := NewNBAWatcher()
+	w.Follow(s)
 }
 
 type Watcher interface {
@@ -22,13 +19,7 @@ type Watcher interface {
 	IsWatching(game.Game) bool
 }
 
-func watch(w Watcher, s schedule.Schedule) {
-	w.Follow(s)
-}
-
-type PrintWatcher struct {
-	s schedule.Schedule
-}
+type PrintWatcher struct{}
 
 func (w PrintWatcher) Follow(s schedule.Schedule) {
 	fmt.Printf("%#v\n", s.Games())
