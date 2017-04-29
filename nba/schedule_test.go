@@ -28,7 +28,7 @@ func testSchedule(t *testing.T, expectedGames NBAGames) {
 	r := newFakeScheduleURL(ts.URL)
 	s := NewNBASchedule(r) // inject fakes into constructor
 
-	actualGames := s.ScheduledGames()
+	actualGames := s.Games()
 
 	for i := range expectedGames.Games {
 		expected := expectedGames.Games[i]
@@ -80,7 +80,7 @@ func TestExampleJSON(t *testing.T) {
 
 	expectedCodes := []string{"WASBOS", "UTALAC"}
 
-	actualGames := s.ScheduledGames()
+	actualGames := s.Games()
 
 	for i := range expectedCodes {
 		expected := expectedCodes[i]

@@ -25,7 +25,7 @@ func NewNBASchedule(r ScheduleURL) *NBASchedule {
 //
 // Potential improvement: have this function simply return stored values
 // and have something else populate that store in the background
-func (s *NBASchedule) ScheduledGames() []game.Game {
+func (s *NBASchedule) Games() []game.Game {
 	resp, err := http.Get(s.r.URL())
 	if err != nil {
 		log.Printf("error retrieving games: %s\n", err) // TODO

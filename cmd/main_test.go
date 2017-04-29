@@ -12,7 +12,7 @@ func TestMain(t *testing.T) {
 }
 
 type MockSchedule struct {
-	Games []game.Game
+	MockGames []game.Game
 }
 
 type MockGame struct {
@@ -32,11 +32,11 @@ func NewMockSchedule(gameCodes []string) *MockSchedule {
 	for _, code := range gameCodes {
 		games = append(games, NewMockGame(code))
 	}
-	return &MockSchedule{Games: games}
+	return &MockSchedule{games}
 }
 
-func (r *MockSchedule) ScheduledGames() []game.Game {
-	return r.Games
+func (r *MockSchedule) Games() []game.Game {
+	return r.MockGames
 }
 
 type MockWatcher struct{}
@@ -56,11 +56,11 @@ func TestWatchOneGame(t *testing.T) {
 
 	watcher.Follow(schedule)
 
-	if len(schedule.ScheduledGames()) != 1 {
+	if len(schedule.Games()) != 1 {
 		t.Errorf("schedule not reflecting all games!")
 	}
 
-	for _, game := range schedule.ScheduledGames() {
+	for _, game := range schedule.Games() {
 		if !watcher.IsWatching(game) {
 			t.Errorf("not watching %s!", game)
 		}

@@ -31,7 +31,7 @@ type PrintWatcher struct {
 }
 
 func (w PrintWatcher) Follow(s schedule.Schedule) {
-	fmt.Printf("%#v\n", s.ScheduledGames())
+	fmt.Printf("%#v\n", s.Games())
 }
 
 func (w PrintWatcher) IsWatching(g game.Game) bool {

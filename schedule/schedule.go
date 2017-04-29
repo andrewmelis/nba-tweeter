@@ -5,5 +5,5 @@ import (
 )
 
 type Schedule interface {
-	ScheduledGames() []game.Game
+	Games() []game.Game
 }
