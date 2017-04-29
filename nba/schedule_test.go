@@ -11,9 +11,9 @@ import (
 
 func TestScheduledNBAGames(t *testing.T) {
 	var schedules = []NBAGames{
-		NewNBAGames("GSWCLE"),
-		NewNBAGames("ATLWAS"),
-		NewNBAGames("GSWCLE", "ATLWAS"),
+		fakeNBAGames("GSWCLE"),
+		fakeNBAGames("GSWCLE", "ATLWAS"),
+		fakeNBAGames("GSWCLE", "ATLWAS", "CHIBOS"),
 	}
 
 	for _, s := range schedules {
@@ -21,19 +21,11 @@ func TestScheduledNBAGames(t *testing.T) {
 	}
 }
 
-func NewNBAGames(gameCodes ...string) NBAGames {
-	var games NBAGames
-	for _, code := range gameCodes {
-		games.Games = append(games.Games, NewNBAGame(code))
-	}
-	return games
-}
-
 func testSchedule(t *testing.T, expectedGames NBAGames) {
 	ts := httptest.NewServer(newNBAGameHandlerFunc(expectedGames))
 	defer ts.Close()
 
-	r := NewFakeScheduleURL(ts.URL)
+	r := newFakeScheduleURL(ts.URL)
 	s := NewNBASchedule(r) // inject fakes into constructor
 
 	actualGames := s.ScheduledGames()
@@ -45,6 +37,18 @@ func testSchedule(t *testing.T, expectedGames NBAGames) {
 			t.Errorf("expected: %+v; actual: %+v\n", expectedGames, actualGames)
 		}
 	}
+}
+
+func fakeNBAGames(gameCodes ...string) NBAGames {
+	var games NBAGames
+	for _, code := range gameCodes {
+		games.Games = append(games.Games, fakeNBAGame(code))
+	}
+	return games
+}
+
+func fakeNBAGame(code string) NBAGame {
+	return NBAGame{Code: code}
 }
 
 func newNBAGameHandlerFunc(g NBAGames) http.HandlerFunc {
@@ -59,14 +63,14 @@ func newNBAGameHandlerFunc(g NBAGames) http.HandlerFunc {
 	}
 }
 
-type FakeScheduleURL struct {
+type fakeScheduleURL struct {
 	url string
 }
 
-func NewFakeScheduleURL(url string) FakeScheduleURL {
-	return FakeScheduleURL{url: url}
+func newFakeScheduleURL(url string) fakeScheduleURL {
+	return fakeScheduleURL{url: url}
 }
 
-func (r FakeScheduleURL) URL() string {
+func (r fakeScheduleURL) URL() string {
 	return r.url
 }

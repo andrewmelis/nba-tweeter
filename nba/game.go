@@ -5,11 +5,7 @@ type NBAGames struct {
 }
 
 type NBAGame struct {
-	Code string //`json:"code"`
-}
-
-func NewNBAGame(code string) NBAGame {
-	return NBAGame{Code: code}
+	Code string `json:"code"`
 }
 
 func (g NBAGame) GameCode() string {
