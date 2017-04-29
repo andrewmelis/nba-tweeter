@@ -12,6 +12,10 @@ type NBASchedule struct {
 	r ScheduleURL
 }
 
+func NewDefaultNBASchedule() *NBASchedule {
+	return &NBASchedule{r: NewDefaultNBAScheduleURL()}
+}
+
 func NewNBASchedule(r ScheduleURL) *NBASchedule {
 	return &NBASchedule{r: r}
 }
