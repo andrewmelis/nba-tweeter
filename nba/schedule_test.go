@@ -7,12 +7,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/andrewmelis/nba-tweeter/game"
 )
 
 func TestScheduledNBAGames(t *testing.T) {
-	var schedules = [][]game.Game{
+	var schedules = []NBAGames{
 		NewNBAGames("GSWCLE"),
 		NewNBAGames("ATLWAS"),
 		NewNBAGames("GSWCLE", "ATLWAS"),
@@ -23,15 +21,15 @@ func TestScheduledNBAGames(t *testing.T) {
 	}
 }
 
-func NewNBAGames(gameCodes ...string) []game.Game {
-	var games []game.Game
+func NewNBAGames(gameCodes ...string) NBAGames {
+	var games NBAGames
 	for _, code := range gameCodes {
-		games = append(games, NewNBAGame(code))
+		games.Games = append(games.Games, NewNBAGame(code))
 	}
 	return games
 }
 
-func testSchedule(t *testing.T, expectedGames []game.Game) {
+func testSchedule(t *testing.T, expectedGames NBAGames) {
 	ts := httptest.NewServer(newNBAGameHandlerFunc(expectedGames))
 	defer ts.Close()
 
@@ -40,8 +38,8 @@ func testSchedule(t *testing.T, expectedGames []game.Game) {
 
 	actualGames := s.ScheduledGames()
 
-	for i := range expectedGames {
-		expected := expectedGames[i]
+	for i := range expectedGames.Games {
+		expected := expectedGames.Games[i]
 		actual := actualGames[i]
 		if expected != actual {
 			t.Errorf("expected: %+v; actual: %+v\n", expectedGames, actualGames)
@@ -49,7 +47,7 @@ func testSchedule(t *testing.T, expectedGames []game.Game) {
 	}
 }
 
-func newNBAGameHandlerFunc(g []game.Game) http.HandlerFunc {
+func newNBAGameHandlerFunc(g NBAGames) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		enc := json.NewEncoder(w)
 		err := enc.Encode(&g)

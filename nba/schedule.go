@@ -32,7 +32,7 @@ func (s *NBASchedule) ScheduledGames() []game.Game {
 
 	dec := json.NewDecoder(resp.Body)
 
-	var games []NBAGame
+	var games NBAGames
 	for dec.More() {
 		err := dec.Decode(&games)
 		if err != nil {
@@ -44,9 +44,9 @@ func (s *NBASchedule) ScheduledGames() []game.Game {
 	return convertNBAGamesToIGames(games)
 }
 
-func convertNBAGamesToIGames(games []NBAGame) []game.Game {
-	var iGames = make([]game.Game, len(games))
-	for i, game := range games {
+func convertNBAGamesToIGames(games NBAGames) []game.Game {
+	var iGames = make([]game.Game, len(games.Games))
+	for i, game := range games.Games {
 		iGames[i] = game
 	}
 	return iGames

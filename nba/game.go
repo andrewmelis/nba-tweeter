@@ -1,7 +1,11 @@
 package nba
 
+type NBAGames struct {
+	Games []NBAGame `json:"games"`
+}
+
 type NBAGame struct {
-	Code string `json:"code"`
+	Code string //`json:"code"`
 }
 
 func NewNBAGame(code string) NBAGame {
@@ -10,4 +14,5 @@ func NewNBAGame(code string) NBAGame {
 
 func (g NBAGame) GameCode() string {
 	return g.Code
+
 }
