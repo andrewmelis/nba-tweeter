@@ -3,7 +3,7 @@ package nba
 import (
 	"encoding/json"
 	"fmt"
-	_ "io/ioutil"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -69,4 +69,36 @@ func newFakeScheduleURL(url string) fakeScheduleURL {
 
 func (r fakeScheduleURL) URL() string {
 	return r.url
+}
+
+func TestExampleJSON(t *testing.T) {
+	ts := httptest.NewServer(newFixtureHandlerFunc("fixtures/example.json"))
+	defer ts.Close()
+
+	r := newFakeScheduleURL(ts.URL)
+	s := NewNBASchedule(r) // inject fakes into constructor
+
+	expectedCodes := []string{"WASBOS", "UTALAC"}
+
+	actualGames := s.ScheduledGames()
+
+	for i := range expectedCodes {
+		expected := expectedCodes[i]
+		actual := actualGames[i].GameCode()
+		if expected != actual {
+			t.Errorf("expected: %+v; actual: %+v\n", expected, actual)
+		}
+	}
+}
+
+func newFixtureHandlerFunc(filename string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		contents, err := ioutil.ReadFile(filename)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintln(w, `{"error":"server error occurred"}`)
+			return
+		}
+		fmt.Fprintf(w, "%s", contents)
+	}
 }
