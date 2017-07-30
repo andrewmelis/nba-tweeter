@@ -15,6 +15,7 @@ func NewDebugWatcher() DebugWatcher {
 
 func (w DebugWatcher) Follow(s schedule.Schedule) {
 	fmt.Printf("%#v\n", s.Games())
+	// TODO
 }
 
 func (w DebugWatcher) IsWatching(g game.Game) bool {
