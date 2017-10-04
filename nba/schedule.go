@@ -20,7 +20,7 @@ func NewNBASchedule(r ScheduleURL) *NBASchedule {
 	return &NBASchedule{r: r}
 }
 
-// ScheduledGames retrieves, decodes, and returns a slice of Game types
+// Games retrieves, decodes, and returns a slice of Game types
 // from the calling *NBASchedule's ScheduleURL.
 //
 // Potential improvement: have this function simply return stored values

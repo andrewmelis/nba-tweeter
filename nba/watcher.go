@@ -26,6 +26,6 @@ func (w *NBAWatcher) IsWatching(g game.Game) bool {
 type Processor struct {
 }
 
-func (p *Procesor) IsProcessing(g game.Game) bool {
-
+func (p *Processor) IsProcessing(g game.Game) bool {
+	return false
 }

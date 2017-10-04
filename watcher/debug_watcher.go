@@ -7,17 +7,23 @@ import (
 	"github.com/andrewmelis/nba-tweeter/schedule"
 )
 
-type DebugWatcher struct{}
-
-func NewDebugWatcher() DebugWatcher {
-	return DebugWatcher{}
+type DebugWatcher struct {
+	plays []string
 }
 
-func (w DebugWatcher) Follow(s schedule.Schedule) {
+func NewDebugWatcher() *DebugWatcher {
+	return &DebugWatcher{}
+}
+
+func (w *DebugWatcher) Follow(s schedule.Schedule) {
 	fmt.Printf("%#v\n", s.Games())
 	// TODO
 }
 
-func (w DebugWatcher) IsWatching(g game.Game) bool {
+func (w *DebugWatcher) IsWatching(g game.Game) bool {
 	return true
+}
+
+func (w *DebugWatcher) Events() []string {
+	return w.plays
 }
