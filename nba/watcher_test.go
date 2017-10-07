@@ -3,19 +3,24 @@ package nba
 import (
 	"testing"
 
+	"github.com/andrewmelis/nba-tweeter/clock"
 	"github.com/andrewmelis/nba-tweeter/game"
+	"github.com/andrewmelis/nba-tweeter/processor"
 )
 
 func TestThisOnlyWorksForNBAGames(t *testing.T) {
 	t.Error("is this the right design?")
 }
 
-func TestFollowStartsWatchingEveryGame(t *testing.T) {
+func TestFollowProcessesEachPlayOfGame(t *testing.T) {
 	games := []string{"GSWCLE", "ATLWAS"}
 	s := newFakeSchedule(games...)
 
-	p := &Processor{}
-	w := NewNBAWatcher(p)
+	now := clock.MakeTime(7, 30, "US/Eastern", "20170609")
+	c := clock.NewFakeClock(now)
+
+	p := processor.NewDebugProcessor()
+	w := NewNBAWatcher(c, p)
 
 	w.Follow(s)
 
@@ -25,19 +30,6 @@ func TestFollowStartsWatchingEveryGame(t *testing.T) {
 		}
 	}
 }
-
-func TestFollowDoesSomething(t *testing.T) {
-	t.Error("what does follow do? what side effect does it trigger?\n")
-}
-
-// func TestFollowProcessesEachPlayOfGame(t *testing.T) {
-// 	games := []string{"GSWCLE"}
-// 	s := newFakeSchedule(games...)
-
-// 	p := &TestProcessor{}
-// 	w := NewNBAWatcher(p)
-
-// 	w.Follow(s)
 
 // 	// advance "time" by one play
 // 	s.Games[0].AdvanceTime()

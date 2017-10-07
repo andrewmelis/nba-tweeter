@@ -25,7 +25,7 @@ func (u NBAScheduleURL) URL() string {
 	*/
 
 	// vvvvvvvvvvvvvvvvvvvvvvvv
-	raw, err := time.Parse("20060102", "20170717")
+	raw, err := time.Parse("20060102", "20170717") //FIXME inject clock
 	if err != nil {
 		fmt.Println(err)
 		return ""
