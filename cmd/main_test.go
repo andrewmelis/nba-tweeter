@@ -23,17 +23,13 @@ func TestNBA(t *testing.T) {
 	defer ts.Close()
 	url := newFakeScheduleURL(ts.URL)
 
-	w := watcher.NewDebugWatcher() // FIXME change to nbaWatcher
+	p := processor.NewDebugProcessor()
+	w := watcher.NewNbaWatcher(p)
 	s := nba.NewNBASchedule(url)
-
-	// setup ^^^^ FIXME ONLY need to inject fake server
-	// AND/OR inject hardcoded date for real server
-	// fake games are for fake server, not fake client
-	// everything after s.Watch() should be "real"
 
 	w.Follow(s)
 
-	clock.Advance(30 * time.Second)
+	clock.Advance(30 * time.Second) // arbitrary number
 
 	plays := []string{"play 1", "play 2"}
 
