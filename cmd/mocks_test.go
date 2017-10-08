@@ -1,44 +1,46 @@
 package main
 
 import (
-	"github.com/andrewmelis/nba-tweeter/game"
-	"github.com/andrewmelis/nba-tweeter/schedule"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 )
 
-type MockSchedule struct {
-	MockGames []game.Game
+type fakeScheduleURL struct {
+	url string
 }
 
-type MockGame struct {
-	Code string
+func newFakeScheduleURL(url string) fakeScheduleURL {
+	return fakeScheduleURL{url: url}
 }
 
-func NewMockGame(code string) MockGame {
-	return MockGame{Code: code}
+func (r fakeScheduleURL) URL() string {
+	return r.url
 }
 
-func (g MockGame) GameCode() string {
-	return ""
-}
+func newFixtureHandlerFunc() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// switch file based on call
+		var filename string
+		switch r.URL.Path {
+		case "data/10s/prod/v1/20170609/scoreboard.json":
+			filename = "scoreboard.json"
+		case "prod/v1/20170609/0041600404_pbp_1.json":
+			filename = "pbp_1.json"
+		case "prod/v1/20170609/0041600404_pbp_2.json":
+			filename = "pbp_2.json"
+		case "prod/v1/20170609/0041600404_pbp_3.json":
+			filename = "pbp_3.json"
+		case "prod/v1/20170609/0041600404_pbp_4.json":
+			filename = "pbp_4.json"
+		}
 
-func NewMockSchedule(gameCodes []string) *MockSchedule {
-	games := []game.Game{}
-	for _, code := range gameCodes {
-		games = append(games, NewMockGame(code))
+		contents, err := ioutil.ReadFile(filename)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintln(w, `{"error":"server error occurred"}`)
+			return
+		}
+		fmt.Fprintf(w, "%s", contents)
 	}
-	return &MockSchedule{games}
-}
-
-func (r *MockSchedule) Games() []game.Game {
-	return r.MockGames
-}
-
-type MockWatcher struct{}
-
-func (w *MockWatcher) IsWatching(g game.Game) bool {
-	return true
-}
-
-func (w *MockWatcher) Follow(s schedule.Schedule) error {
-	return nil
 }

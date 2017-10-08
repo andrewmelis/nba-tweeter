@@ -44,7 +44,7 @@ func (s *NBASchedule) Games() []game.Game {
 		}
 	}
 
-	return convertNBAGamesToIGames(games)
+	return convertNBAGamesToIGames(games) // FIXME -- necessary?
 }
 
 func convertNBAGamesToIGames(games NBAGames) []game.Game {

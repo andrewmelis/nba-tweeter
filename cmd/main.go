@@ -1,15 +1,17 @@
 package main
 
 import (
-	"github.com/andrewmelis/nba-tweeter/nba"
-	"github.com/andrewmelis/nba-tweeter/watcher"
+	"fmt"
+
+	_ "github.com/andrewmelis/nba-tweeter/nba"
+	_ "github.com/andrewmelis/nba-tweeter/watcher"
 )
 
 func main() {
-	s := nba.NewDefaultNBASchedule()
+	// s := nba.NewDefaultNBASchedule()
 
 	// w := watcher.NewMultiWatcher(TweetWatcher, LogWatcher, DBWatcher) ???
-	w := watcher.NewDebugWatcher()
+	// w := watcher.NewDebugWatcher()
 
 	// loops over games
 	// when new game
@@ -17,5 +19,6 @@ func main() {
 	// game updates self with plays
 	// watcher pipes all plays to a sink (e.g. twitter sink, log sink)
 
-	w.Follow(s)
+	// w.Follow(s)
+	fmt.Printf("%s\n", "FIXME")
 }

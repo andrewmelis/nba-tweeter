@@ -4,17 +4,19 @@ import (
 	"testing"
 
 	"github.com/andrewmelis/nba-tweeter/clock"
-	"github.com/andrewmelis/nba-tweeter/game"
+	"github.com/andrewmelis/nba-tweeter/play"
 	"github.com/andrewmelis/nba-tweeter/processor"
 )
 
-func TestThisOnlyWorksForNBAGames(t *testing.T) {
-	t.Error("is this the right design?")
-}
-
-func TestFollowProcessesEachPlayOfGame(t *testing.T) {
-	games := []string{"GSWCLE", "ATLWAS"}
-	s := newFakeSchedule(games...)
+func TestFollowProcessesEachPlayOfGameOnce(t *testing.T) {
+	playsWithDup := []play.Play{
+		fakePlay{"play 1"},
+		fakePlay{"play 2"},
+		fakePlay{"play 3"},
+		fakePlay{"play 3"},
+		fakePlay{"play 4"},
+	}
+	game := &fakeGame{"GSWCLE", playsWithDup}
 
 	now := clock.MakeTime(7, 30, "US/Eastern", "20170609")
 	c := clock.NewFakeClock(now)
@@ -22,52 +24,96 @@ func TestFollowProcessesEachPlayOfGame(t *testing.T) {
 	p := processor.NewDebugProcessor()
 	w := NewNBAWatcher(c, p)
 
-	w.Follow(s)
+	w.Follow(game)
 
-	for _, game := range s.Games() {
-		if !w.IsWatching(game) {
-			t.Errorf("should be watching %s\n", game)
+	c.Advance()
+
+	expected := []play.Play{
+		fakePlay{"play 1"},
+		fakePlay{"play 2"},
+		fakePlay{"play 3"},
+		fakePlay{"play 4"},
+	}
+	actual := p.Plays(game.GameCode())
+
+	if len(expected) != len(actual) {
+		t.Errorf("Wanted: %s, Got: %s", expected, actual)
+	}
+
+	for i, _ := range actual {
+		if expected[i] != actual[i] {
+			t.Errorf("Wanted: %s, Got: %s", expected, actual)
 		}
 	}
 }
 
-// 	// advance "time" by one play
-// 	s.Games[0].AdvanceTime()
+func TestFollowProcessesPeriodically(t *testing.T) {
+	plays := []play.Play{
+		fakePlay{"play 1"},
+		fakePlay{"play 2"},
+		fakePlay{"play 3"},
+		fakePlay{"play 4"},
+	}
 
-// 	// check if first play of game was processed
-// 	firstPlays := s.Games[0].Plays[0]
-// 	if !p.Games(s.Games[0]).WasProcessed(s.Games[0].Plays[0]) {
-// 		t.Errorf("first play %s of game %s should have been processed",
-// 	}
+	game := &fakeGame{"GSWCLE", plays}
 
-// 	// advance "time" by another play
-// 	// check if second play of game was processed
-// }
+	now := clock.MakeTime(7, 30, "US/Eastern", "20170609")
+	c := clock.NewFakeClock(now)
 
-type fakeSchedule struct {
-	games []fakeGame
+	p := processor.NewDebugProcessor()
+	w := NewNBAWatcher(c, p)
+
+	w.Follow(game)
+
+	c.Advance()
+
+	// add additional plays, simulating time passing
+	newPlay := fakePlay{"play 5"}
+	game.plays = append(game.plays, newPlay)
+
+	c.Advance()
+
+	expected := []play.Play{
+		fakePlay{"play 1"},
+		fakePlay{"play 2"},
+		fakePlay{"play 3"},
+		fakePlay{"play 4"},
+		fakePlay{"play 5"},
+	}
+	actual := p.Plays(game.GameCode())
+
+	if len(expected) != len(actual) {
+		t.Errorf("Wanted: %s, Got: %s", expected, actual)
+	}
+
+	for i, _ := range actual {
+		if expected[i] != actual[i] {
+			t.Errorf("Wanted: %s, Got: %s", expected, actual)
+		}
+	}
 }
 
-func newFakeSchedule(gameCodes ...string) fakeSchedule {
-	var s fakeSchedule
-	for _, g := range gameCodes {
-		s.games = append(s.games, fakeGame{g})
-	}
-	return s
-}
-
-func (s fakeSchedule) Games() []game.Game {
-	var games []game.Game
-	for _, g := range s.games {
-		games = append(games, g)
-	}
-	return games
+func TestStopsProcessesingWhenGameIsOver(t *testing.T) {
+	t.Errorf("how to clean up?")
 }
 
 type fakeGame struct {
-	code string
+	code  string
+	plays []play.Play
 }
 
-func (g fakeGame) GameCode() string {
+func (g *fakeGame) GameCode() string {
 	return g.code
+}
+
+func (g *fakeGame) Plays() []play.Play {
+	return g.plays
+}
+
+type fakePlay struct {
+	s string
+}
+
+func (f fakePlay) String() string {
+	return f.s
 }

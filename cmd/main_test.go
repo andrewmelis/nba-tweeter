@@ -3,57 +3,67 @@ package main
 import (
 	"net/http/httptest"
 	"testing"
-	"time"
 
+	"github.com/andrewmelis/nba-tweeter/clock"
 	"github.com/andrewmelis/nba-tweeter/nba"
-	"github.com/andrewmelis/nba-tweeter/watcher"
+	"github.com/andrewmelis/nba-tweeter/processor"
 )
 
-func TestMain(t *testing.T) {
-	// t.Errorf("blow up\n")
-}
-
-// FIXME for now only follow cavs games
 func TestNBA(t *testing.T) {
-	now := makeTime(7, 30, "US/Eastern", "20170402")
-	clock := newFakeClock(now)
+	now := clock.MakeTime(7, 30, "US/Eastern", "20170609")
+	clock := clock.NewFakeClock(now)
 
 	// setup fake server
-	ts := httptest.NewServer(newFixtureHandlerFunc("fixtures/example.json"))
+	ts := httptest.NewServer(newFixtureHandlerFunc())
 	defer ts.Close()
 	url := newFakeScheduleURL(ts.URL)
 
 	p := processor.NewDebugProcessor()
-	w := watcher.NewNbaWatcher(p)
+	w := nba.NewNBAWatcher(clock, p)
 	s := nba.NewNBASchedule(url)
 
-	w.Follow(s)
+	for _, g := range s.Games() {
+		w.Follow(g)
+	} // FIXME -- encapsulate this in a type?
 
-	clock.Advance(30 * time.Second) // arbitrary number
+	game := "GSWCLE"
 
-	plays := []string{"play 1", "play 2"}
-
-	expected := plays
-	actual := w.Events()
+	// game start
+	expected := []string{"play 1", "play 2"}
+	actual := p.Plays(game)
 	if len(expected) != len(actual) {
 		t.Errorf("Wanted: %s, Got: %s", expected, actual)
 	}
 
-	clock.Advance(2 * time.Hour)
+	clock.Advance() // second quarter
 
-	expected = plays
-	actual = w.Events()
+	expected = []string{"play 1", "play 2"}
+	actual = p.Plays(game)
 	if len(expected) != len(actual) {
 		t.Errorf("Wanted: %s, Got: %s", expected, actual)
 	}
 
-	clock.Advance(1 * time.Hour)
+	clock.Advance() // third quarter
+
+	expected = []string{"play 1", "play 2"}
+	actual = p.Plays(game)
+	if len(expected) != len(actual) {
+		t.Errorf("Wanted: %s, Got: %s", expected, actual)
+	}
+
+	clock.Advance() // fourth quarter
+
+	expected = []string{"play 1", "play 2"}
+	actual = p.Plays(game)
+	if len(expected) != len(actual) {
+		t.Errorf("Wanted: %s, Got: %s", expected, actual)
+	}
+
+	clock.Advance() // game over
 
 	// expected is still same bc game over
-	actual = w.Events()
+	actual = p.Plays(game)
 	if len(expected) != len(actual) {
 		t.Errorf("Wanted: %s, Got: %s", expected, actual)
 	}
 }
-
-// "feature test" -- run and actually tweet, then retrieve tweet via twitter api?

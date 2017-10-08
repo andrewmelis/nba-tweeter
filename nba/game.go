@@ -2,10 +2,12 @@ package nba
 
 import (
 	"fmt"
+
+	"github.com/andrewmelis/nba-tweeter/play"
 )
 
 type NBAGames struct {
-	Games []NBAGame `json:"games"`
+	Games []*NBAGame `json:"games"`
 }
 
 type NBAGame struct {
@@ -13,9 +15,13 @@ type NBAGame struct {
 	Home    NBATeam `json:"hTeam"`
 }
 
-func (g NBAGame) GameCode() string {
+func (g *NBAGame) GameCode() string {
 	return fmt.Sprintf("%s%s", g.Visitor.TriCode, g.Home.TriCode)
+}
 
+func (g *NBAGame) Plays() []play.Play {
+	plays := make([]play.Play, 0)
+	return plays
 }
 
 type NBATeam struct {

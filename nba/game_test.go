@@ -15,12 +15,12 @@ func TestGameCode(t *testing.T) {
 	}
 }
 
-func fakeNBAGame(code string) NBAGame {
+func fakeNBAGame(code string) *NBAGame {
 	visitorCode := code[:3]
 	visitor := NBATeam{visitorCode}
 
 	homeCode := code[3:]
 	home := NBATeam{homeCode}
 
-	return NBAGame{visitor, home}
+	return &NBAGame{visitor, home}
 }
