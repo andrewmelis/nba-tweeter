@@ -16,12 +16,13 @@ func TestNBA(t *testing.T) {
 	// setup fake server
 	ts := httptest.NewServer(newFixtureHandlerFunc())
 	defer ts.Close()
-	url := newFakeScheduleURL(ts.URL)
+	url := newFakeScheduleURL(ts.URL) // fixme -- need path
 
 	p := processor.NewDebugProcessor()
 	w := nba.NewNBAWatcher(clock, p)
 	s := nba.NewNBASchedule(url)
 
+	t.Errorf("Found these games: %+v", s.Games())
 	for _, g := range s.Games() {
 		w.Follow(g)
 	} // FIXME -- encapsulate this in a type?
