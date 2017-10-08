@@ -18,22 +18,16 @@ func TestFollowProcessesEachPlayOfGameOnce(t *testing.T) {
 	}
 	game := &fakeGame{"GSWCLE", playsWithDup}
 
-	now := clock.MakeTime(7, 30, "US/Eastern", "20170609")
+	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
 	c := clock.NewFakeClock(now)
 
 	p := processor.NewDebugProcessor()
 	w := NewNBAWatcher(c, p)
 
 	w.Follow(game)
-
 	c.Advance()
 
-	expected := []play.Play{
-		fakePlay{"play 1"},
-		fakePlay{"play 2"},
-		fakePlay{"play 3"},
-		fakePlay{"play 4"},
-	}
+	expected := append(playsWithDup[:3], playsWithDup[4:]...) // delete duplicate
 	actual := p.Plays(game.GameCode())
 
 	if len(expected) != len(actual) {
@@ -57,15 +51,27 @@ func TestFollowProcessesPeriodically(t *testing.T) {
 
 	game := &fakeGame{"GSWCLE", plays}
 
-	now := clock.MakeTime(7, 30, "US/Eastern", "20170609")
+	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
 	c := clock.NewFakeClock(now)
 
 	p := processor.NewDebugProcessor()
 	w := NewNBAWatcher(c, p)
 
 	w.Follow(game)
-
 	c.Advance()
+
+	expected := plays
+	actual := p.Plays(game.GameCode())
+
+	if len(expected) != len(actual) {
+		t.Errorf("Wanted: %s, Got: %s", expected, actual)
+	}
+
+	for i, _ := range actual {
+		if expected[i] != actual[i] {
+			t.Errorf("Wanted: %s, Got: %s", expected, actual)
+		}
+	}
 
 	// add additional plays, simulating time passing
 	newPlay := fakePlay{"play 5"}
@@ -73,14 +79,8 @@ func TestFollowProcessesPeriodically(t *testing.T) {
 
 	c.Advance()
 
-	expected := []play.Play{
-		fakePlay{"play 1"},
-		fakePlay{"play 2"},
-		fakePlay{"play 3"},
-		fakePlay{"play 4"},
-		fakePlay{"play 5"},
-	}
-	actual := p.Plays(game.GameCode())
+	expected = append(expected, newPlay)
+	actual = p.Plays(game.GameCode())
 
 	if len(expected) != len(actual) {
 		t.Errorf("Wanted: %s, Got: %s", expected, actual)

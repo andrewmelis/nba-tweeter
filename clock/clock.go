@@ -6,4 +6,5 @@ import (
 
 type Clock interface {
 	Now() time.Time
+	Ticker() <-chan time.Time
 }

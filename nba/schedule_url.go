@@ -2,37 +2,40 @@ package nba
 
 import (
 	"fmt"
-	"time"
+
+	"github.com/andrewmelis/nba-tweeter/clock"
 )
 
 type ScheduleURL interface {
 	URL() string
 }
 
-type NBAScheduleURL struct{}
+type NBAScheduleURL struct {
+	baseURL string
+	c       clock.Clock
+}
 
-func NewDefaultNBAScheduleURL() ScheduleURL {
-	return NBAScheduleURL{}
+func NewNBAScheduleURL(baseURL string, c clock.Clock) ScheduleURL {
+	return NBAScheduleURL{baseURL, c}
 }
 
 func (u NBAScheduleURL) URL() string {
 	// TODO retrieve from "today url":
 	// https://data.nba.net/10s/prod/v1/today.json -> currentScoreboard
 
-	/*
-		now := time.Now() FIXME
-		date := now.Format("20060102")
-	*/
-
 	// vvvvvvvvvvvvvvvvvvvvvvvv
-	raw, err := time.Parse("20060102", "20170717") //FIXME inject clock
-	if err != nil {
-		fmt.Println(err)
-		return ""
-	}
-	date := raw.Format("20060102")
+	// https://data.nba.net/
 	// ^^^^^^^^^^^^^^^^^^^^^^^^
 
-	fmt.Println(date)
-	return fmt.Sprintf("https://data.nba.net/data/10s/prod/v1/%s/scoreboard.json", date)
+	return fmt.Sprintf("%s%s", u.baseURL, u.scoreboardPath())
+}
+
+func (u NBAScheduleURL) scoreboardPath() string {
+	const scoreboardPath = "/data/10s/prod/v1/%s/scoreboard.json"
+	return fmt.Sprintf(scoreboardPath, u.date())
+}
+
+func (u NBAScheduleURL) date() string {
+	return u.c.Now().Format("20060102")
+
 }

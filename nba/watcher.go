@@ -24,15 +24,19 @@ func NewNBAWatcher(c clock.Clock, p processor.Processor) NBAWatcher {
 }
 
 func (w *NBAWatcher) Follow(g game.Game) {
-	inputs := g.Plays()
-	inputs = unique(inputs)
+	go func() {
+		for range w.c.Ticker() {
+			inputs := g.Plays()
+			inputs = unique(inputs)
 
-	for i, play := range inputs {
-		if i >= len(w.seenPlays) {
-			w.seenPlays = append(w.seenPlays, play)
-			w.p.Process(g.GameCode(), play)
+			for i, play := range inputs {
+				if i >= len(w.seenPlays) {
+					w.seenPlays = append(w.seenPlays, play)
+					w.p.Process(g.GameCode(), play)
+				}
+			}
 		}
-	}
+	}()
 }
 
 func unique(in []play.Play) []play.Play {

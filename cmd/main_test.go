@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "fmt"
 	"net/http/httptest"
 	"testing"
 
@@ -10,24 +11,27 @@ import (
 )
 
 func TestNBA(t *testing.T) {
-	now := clock.MakeTime(7, 30, "US/Eastern", "20170609")
+	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
 	clock := clock.NewFakeClock(now)
 
 	// setup fake server
 	ts := httptest.NewServer(newFixtureHandlerFunc())
 	defer ts.Close()
-	url := newFakeScheduleURL(ts.URL) // fixme -- need path
 
 	p := processor.NewDebugProcessor()
 	w := nba.NewNBAWatcher(clock, p)
+
+	url := nba.NewNBAScheduleURL(ts.URL, clock)
 	s := nba.NewNBASchedule(url)
 
-	t.Errorf("Found these games: %+v", s.Games())
 	for _, g := range s.Games() {
 		w.Follow(g)
 	} // FIXME -- encapsulate this in a type?
 
 	game := "GSWCLE"
+	if s.Games()[0].GameCode() != game {
+		t.Errorf("Wanted: %s, Got: %s", game, s.Games()[0].GameCode())
+	}
 
 	// game start
 	expected := []string{"play 1", "play 2"}
