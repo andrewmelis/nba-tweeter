@@ -16,13 +16,13 @@ func TestFollowProcessesEachPlayOfGameOnce(t *testing.T) {
 		fakePlay{"play 3"},
 		fakePlay{"play 4"},
 	}
-	game := &fakeGame{"GSWCLE", playsWithDup}
+	game := newFakeGame("GSWCLE", playsWithDup)
 
 	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
 	c := clock.NewFakeClock(now)
 
 	p := processor.NewDebugProcessor()
-	w := NewNBAWatcher(c, p)
+	w := NewNBAWatcher(c, p, func(string) {})
 
 	w.Follow(game)
 	c.Advance()
@@ -51,14 +51,14 @@ func TestFollowProcessesMultipleGames(t *testing.T) {
 	playsG2 := make([]play.Play, len(playsG1))
 	copy(playsG2, playsG1)
 
-	game1 := &fakeGame{"GSWCLE", playsG1}
-	game2 := &fakeGame{"OKCSAS", playsG2}
+	game1 := newFakeGame("GSWCLE", playsG1)
+	game2 := newFakeGame("OKCSAS", playsG2)
 
 	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
 	c := clock.NewFakeClock(now)
 
 	p := processor.NewDebugProcessor()
-	w := NewNBAWatcher(c, p)
+	w := NewNBAWatcher(c, p, func(string) {})
 
 	w.Follow(game1)
 	w.Follow(game2)
@@ -94,13 +94,13 @@ func TestFollowProcessesPeriodically(t *testing.T) {
 		fakePlay{"play 4"},
 	}
 
-	game := &fakeGame{"GSWCLE", plays}
+	game := newFakeGame("GSWCLE", plays)
 
 	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
 	c := clock.NewFakeClock(now)
 
 	p := processor.NewDebugProcessor()
-	w := NewNBAWatcher(c, p)
+	w := NewNBAWatcher(c, p, func(string) {})
 
 	w.Follow(game)
 	c.Advance()
@@ -139,12 +139,52 @@ func TestFollowProcessesPeriodically(t *testing.T) {
 }
 
 func TestStopsProcessesingWhenGameIsOver(t *testing.T) {
-	t.Errorf("how to clean up?")
+	plays := []play.Play{
+		fakePlay{"play 1"},
+		fakePlay{"play 2"},
+		fakePlay{"play 3"},
+		fakePlay{"play 4"},
+	}
+
+	game := newFakeGame("GSWCLE", plays)
+
+	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
+	c := clock.NewFakeClock(now)
+	cb := fakeCallback{}
+
+	p := processor.NewDebugProcessor()
+	w := NewNBAWatcher(c, p, cb.cb)
+
+	w.Follow(game)
+	game.setActive(false)
+	c.Advance()
+
+	// it still gets all plays
+	expected := plays
+	actual := p.Plays(game.GameCode())
+
+	if len(expected) != len(actual) {
+		t.Errorf("Wanted: %s, Got: %s", expected, actual)
+	}
+
+	for i, _ := range actual {
+		if expected[i] != actual[i] {
+			t.Errorf("Wanted: %s, Got: %s", expected, actual)
+		}
+	}
+	if cb.wasCleanupCalled != true {
+		t.Errorf("Cleanup callback was not called")
+	}
 }
 
 type fakeGame struct {
-	code  string
-	plays []play.Play
+	code   string
+	plays  []play.Play
+	active bool
+}
+
+func newFakeGame(gamecode string, plays []play.Play) *fakeGame {
+	return &fakeGame{gamecode, plays, true}
 }
 
 func (g *fakeGame) GameCode() string {
@@ -155,10 +195,26 @@ func (g *fakeGame) Plays() []play.Play {
 	return g.plays
 }
 
+func (g *fakeGame) IsActive() bool {
+	return g.active
+}
+
+func (g *fakeGame) setActive(b bool) {
+	g.active = b
+}
+
 type fakePlay struct {
 	s string
 }
 
 func (f fakePlay) String() string {
 	return f.s
+}
+
+type fakeCallback struct {
+	wasCleanupCalled bool
+}
+
+func (f *fakeCallback) cb(gamecode string) {
+	f.wasCleanupCalled = true
 }

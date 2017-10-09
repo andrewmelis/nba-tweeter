@@ -13,6 +13,7 @@ type NBAGames struct {
 type NBAGame struct {
 	Visitor NBATeam `json:"vTeam"`
 	Home    NBATeam `json:"hTeam"`
+	// Active  bool    `json:"isGameActivated"`
 }
 
 func (g *NBAGame) GameCode() string {
@@ -21,7 +22,12 @@ func (g *NBAGame) GameCode() string {
 
 func (g *NBAGame) Plays() []play.Play {
 	plays := make([]play.Play, 0)
-	return plays
+	return plays // FIXME
+}
+
+func (g *NBAGame) IsActive() bool {
+	// return g.Active
+	return false // FIXME
 }
 
 type NBATeam struct {

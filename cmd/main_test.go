@@ -19,7 +19,7 @@ func TestNBA(t *testing.T) {
 	defer ts.Close()
 
 	p := processor.NewDebugProcessor()
-	w := nba.NewNBAWatcher(clock, p)
+	w := nba.NewNBAWatcher(clock, p, func(string) {})
 
 	url := nba.NewNBAScheduleURL(ts.URL, clock)
 	s := nba.NewNBASchedule(url)
