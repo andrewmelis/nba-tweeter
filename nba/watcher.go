@@ -12,14 +12,14 @@ import (
 type NBAWatcher struct {
 	c         clock.Clock
 	p         processor.Processor
-	seenPlays []play.Play
+	seenPlays map[string][]play.Play
 }
 
 func NewNBAWatcher(c clock.Clock, p processor.Processor) NBAWatcher {
 	return NBAWatcher{
 		c:         c,
 		p:         p,
-		seenPlays: make([]play.Play, 0),
+		seenPlays: make(map[string][]play.Play),
 	}
 }
 
@@ -30,9 +30,10 @@ func (w *NBAWatcher) Follow(g game.Game) {
 			inputs = unique(inputs)
 
 			for i, play := range inputs {
-				if i >= len(w.seenPlays) {
-					w.seenPlays = append(w.seenPlays, play)
-					w.p.Process(g.GameCode(), play)
+				code := g.GameCode()
+				if i >= len(w.seenPlays[code]) {
+					w.seenPlays[code] = append(w.seenPlays[code], play)
+					w.p.Process(code, play)
 				}
 			}
 		}

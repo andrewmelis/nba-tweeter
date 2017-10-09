@@ -41,9 +41,7 @@ func (c *FakeClock) Advance() {
 	select {
 	case c.c <- c.Now():
 		time.Sleep(100 * time.Millisecond) // let goroutines do stuff in testing
-		// time.Sleep(1 * time.Second) // let goroutines do stuff in testing
 	case <-time.After(100 * time.Millisecond):
 		// timeout
 	}
-
 }

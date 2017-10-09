@@ -41,6 +41,7 @@ func TestFollowProcessesEachPlayOfGameOnce(t *testing.T) {
 	}
 }
 
+// FIXME -- one game per watcher
 func TestFollowProcessesMultipleGames(t *testing.T) {
 	playsG1 := []play.Play{
 		fakePlay{"play 1"},
@@ -61,8 +62,11 @@ func TestFollowProcessesMultipleGames(t *testing.T) {
 
 	w.Follow(game1)
 	w.Follow(game2)
-	c.Advance()
 
+	c.Advance()
+	c.Advance() // HACK -- clock is broken
+
+	t.Errorf("CLOCK GOROUTINE ONLY WORKS WITH ONE SUBSCRIBER")
 	games := []*fakeGame{game1, game2}
 	plays := [][]play.Play{playsG1, playsG2}
 	for i, _ := range games {
