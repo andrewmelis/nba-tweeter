@@ -42,7 +42,7 @@ func testSchedule(t *testing.T, expectedGames NBAGames) {
 func fakeNBAGames(gameCodes ...string) NBAGames {
 	var games NBAGames
 	for _, code := range gameCodes {
-		games.Games = append(games.Games, fakeNBAGame(code))
+		games.Games = append(games.Games, newNBAGame(code))
 	}
 	return games
 }
@@ -71,8 +71,8 @@ func (r fakeScheduleURL) URL() string {
 	return r.url
 }
 
-func TestExampleJSON(t *testing.T) {
-	ts := httptest.NewServer(newFixtureHandlerFunc("fixtures/example.json"))
+func TestScheduleRetrieval(t *testing.T) {
+	ts := httptest.NewServer(newScheduleFixtureHandlerFunc("fixtures/schedule.json"))
 	defer ts.Close()
 
 	r := newFakeScheduleURL(ts.URL)
@@ -91,7 +91,7 @@ func TestExampleJSON(t *testing.T) {
 	}
 }
 
-func newFixtureHandlerFunc(filename string) http.HandlerFunc {
+func newScheduleFixtureHandlerFunc(filename string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		contents, err := ioutil.ReadFile(filename)
 		if err != nil {

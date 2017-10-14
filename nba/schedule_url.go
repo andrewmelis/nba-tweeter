@@ -37,5 +37,4 @@ func (u NBAScheduleURL) scoreboardPath() string {
 
 func (u NBAScheduleURL) date() string {
 	return u.c.Now().Format("20060102")
-
 }
