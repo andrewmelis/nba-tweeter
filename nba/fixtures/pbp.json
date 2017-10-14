@@ -1,0 +1,37 @@
+{
+  "_internal": {
+    "pubDateTime": "2017-06-10 15:40:49.426",
+    "xslt": "xsl/game/playbyplay/marty_by_period.xsl",
+    "eventName": "pbp_period"
+  },
+  "plays": [
+    {
+      "clock": "11:50",
+      "eventMsgType": "5",
+      "description": "[CLE] Williams Turnover : Lost Ball (1 TO) Steal:Green (2 ST)",
+      "personId": "101114",
+      "teamId": "1610612739",
+      "vTeamScore": "96",
+      "hTeamScore": "115",
+      "isScoreChange": false,
+      "isVideoAvailable": false,
+      "formatted": {
+        "description": "CLE - Williams Turnover : Lost Ball (1 TO) Steal:Green (2 ST)"
+      }
+    },
+    {
+      "clock": "11:21",
+      "eventMsgType": "1",
+      "description": "[GSW 99-115] McCaw 3pt Shot: Made (3 PTS) Assist: K Thompson (2 AST)",
+      "personId": "1627775",
+      "teamId": "1610612744",
+      "vTeamScore": "99",
+      "hTeamScore": "115",
+      "isScoreChange": true,
+      "isVideoAvailable": false,
+      "formatted": {
+        "description": "GSW - McCaw 3pt Shot: Made (3 PTS) Assist: K Thompson (2 AST)"
+      }
+    }
+  ]
+}
