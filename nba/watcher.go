@@ -25,7 +25,7 @@ func NewNBAWatcher(c clock.Clock, p processor.Processor, cb func(string)) NBAWat
 	}
 }
 
-func (w *NBAWatcher) Follow(g game.Game) {
+func (w *NBAWatcher) Watch(g game.Game) {
 	go func() {
 		for range w.c.Ticker() {
 			code := g.GameCode()

@@ -15,7 +15,7 @@ func NewDebugWatcher() *DebugWatcher {
 	return &DebugWatcher{}
 }
 
-func (w *DebugWatcher) Follow(s schedule.Schedule) {
+func (w *DebugWatcher) Watch(s schedule.Schedule) {
 	fmt.Printf("%#v\n", s.Games())
 	// TODO
 }

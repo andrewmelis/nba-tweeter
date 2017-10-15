@@ -25,7 +25,7 @@ func TestNBA(t *testing.T) {
 	s := nba.NewNBASchedule(url)
 
 	for _, g := range s.Games() {
-		w.Follow(g)
+		w.Watch(g)
 	} // FIXME -- encapsulate this in a type?
 
 	game := "GSWCLE"

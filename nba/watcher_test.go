@@ -8,7 +8,7 @@ import (
 	"github.com/andrewmelis/nba-tweeter/processor"
 )
 
-func TestFollowProcessesEachPlayOfGameOnce(t *testing.T) {
+func TestWatchProcessesEachPlayOfGameOnce(t *testing.T) {
 	playsWithDup := []play.Play{
 		fakePlay{"play 1"},
 		fakePlay{"play 2"},
@@ -24,7 +24,7 @@ func TestFollowProcessesEachPlayOfGameOnce(t *testing.T) {
 	p := processor.NewDebugProcessor()
 	w := NewNBAWatcher(c, p, func(string) {})
 
-	w.Follow(game)
+	w.Watch(game)
 	c.Advance()
 
 	expected := append(playsWithDup[:3], playsWithDup[4:]...) // delete duplicate
@@ -41,7 +41,7 @@ func TestFollowProcessesEachPlayOfGameOnce(t *testing.T) {
 	}
 }
 
-func TestFollowProcessesPeriodically(t *testing.T) {
+func TestWatchProcessesPeriodically(t *testing.T) {
 	plays := []play.Play{
 		fakePlay{"play 1"},
 		fakePlay{"play 2"},
@@ -57,7 +57,7 @@ func TestFollowProcessesPeriodically(t *testing.T) {
 	p := processor.NewDebugProcessor()
 	w := NewNBAWatcher(c, p, func(string) {})
 
-	w.Follow(game)
+	w.Watch(game)
 	c.Advance()
 
 	expected := plays
@@ -110,7 +110,7 @@ func TestStopsProcessesingWhenGameIsOver(t *testing.T) {
 	p := processor.NewDebugProcessor()
 	w := NewNBAWatcher(c, p, cb.cb)
 
-	w.Follow(game)
+	w.Watch(game)
 	game.setActive(false)
 	c.Advance()
 
