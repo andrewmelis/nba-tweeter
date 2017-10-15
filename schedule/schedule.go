@@ -8,3 +8,8 @@ import (
 type Schedule interface {
 	Games() []game.Game
 }
+
+// Follower watches all games in a schedule
+type Follower interface {
+	Follow(Schedule)
+}

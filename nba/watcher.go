@@ -16,8 +16,8 @@ type NBAWatcher struct {
 	cb        func(string)
 }
 
-func NewNBAWatcher(c clock.Clock, p processor.Processor, cb func(string)) NBAWatcher {
-	return NBAWatcher{
+func NewNBAWatcher(c clock.Clock, p processor.Processor, cb func(string)) *NBAWatcher {
+	return &NBAWatcher{
 		c:         c,
 		p:         p,
 		seenPlays: make(map[string][]play.Play),
@@ -28,6 +28,8 @@ func NewNBAWatcher(c clock.Clock, p processor.Processor, cb func(string)) NBAWat
 func (w *NBAWatcher) Watch(g game.Game) {
 	go func() {
 		for range w.c.Ticker() {
+			// consider updating game here?
+
 			code := g.GameCode()
 			gameStillActive := g.IsActive()
 

@@ -33,31 +33,6 @@ type Period struct {
 	Current int
 }
 
-type NBAPlays struct {
-	Plays []*NBAPlay `json:"plays"`
-}
-
-type NBAPlay struct {
-	Clock            string           `json:"clock"`
-	Description      string           `json:"description"`
-	PersonId         string           `json:"personId"`
-	TeamId           string           `json:"teamId"`
-	VistingTeamScore string           `json:"vTeamScore"`
-	HomeTeamScore    string           `json:"hTeamScore"`
-	Formatted        FormattedNBAPlay `json:"formatted"`
-	Visitor          NBATeam
-	Home             NBATeam
-	Period           int
-}
-
-type FormattedNBAPlay struct {
-	Description string `json:"description"`
-}
-
-func (p NBAPlay) String() string {
-	return fmt.Sprintf("%s\n[%s %s - %s %s]\n[%s Q%d]", p.Formatted.Description, p.Visitor.TriCode, p.VistingTeamScore, p.HomeTeamScore, p.Home.TriCode, p.Clock, p.Period)
-}
-
 func (g *NBAGame) GameCode() string {
 	return fmt.Sprintf("%s%s", g.Visitor.TriCode, g.Home.TriCode)
 }
@@ -121,4 +96,29 @@ func convertNBAPlaysToIPlays(plays NBAPlays) []play.Play {
 		iPlays[i] = play
 	}
 	return iPlays
+}
+
+type NBAPlays struct {
+	Plays []*NBAPlay `json:"plays"`
+}
+
+type NBAPlay struct {
+	Clock            string           `json:"clock"`
+	Description      string           `json:"description"`
+	PersonId         string           `json:"personId"`
+	TeamId           string           `json:"teamId"`
+	VistingTeamScore string           `json:"vTeamScore"`
+	HomeTeamScore    string           `json:"hTeamScore"`
+	Formatted        FormattedNBAPlay `json:"formatted"`
+	Visitor          NBATeam
+	Home             NBATeam
+	Period           int
+}
+
+type FormattedNBAPlay struct {
+	Description string `json:"description"`
+}
+
+func (p NBAPlay) String() string {
+	return fmt.Sprintf("%s\n[%s %s - %s %s]\n[%s Q%d]", p.Formatted.Description, p.Visitor.TriCode, p.VistingTeamScore, p.HomeTeamScore, p.Home.TriCode, p.Clock, p.Period)
 }

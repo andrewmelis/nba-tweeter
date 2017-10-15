@@ -28,7 +28,7 @@ func newNBAGame(code string) *NBAGame {
 	homeCode := code[3:]
 	home := NBATeam{homeCode}
 
-	return &NBAGame{Visitor: visitor, Home: home}
+	return &NBAGame{Visitor: visitor, Home: home, Active: true}
 }
 
 func TestPlaysRetrieval(t *testing.T) {
