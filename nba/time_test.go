@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+var debugDuration time.Duration = 100 * time.Millisecond
+
 func setupNow() {
 	now := makeTime("20170609 7:30pm", "US/Eastern")
 	Now = func() time.Time { return now }
@@ -13,7 +15,7 @@ func setupNow() {
 // if multiple callers have asked for ticker,
 // need to send down channel multiple times -- probably some way to multiplex
 func setupTicker() chan time.Time {
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(debugDuration)
 	ch := make(chan time.Time, 10) // arbitrary buffer size
 	ticker.C = ch
 
@@ -24,7 +26,7 @@ func setupTicker() chan time.Time {
 			wasDebugTickerTaken = true
 			return ticker
 		}
-		return time.NewTicker(10 * time.Second)
+		return time.NewTicker(debugDuration)
 	}
 
 	return ch
