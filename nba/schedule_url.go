@@ -28,7 +28,7 @@ func (u NBAScheduleURL) URL() string {
 }
 
 func (u NBAScheduleURL) scoreboardPath() string {
-	const scoreboardPath = "/data/10s/prod/v1/%s/scoreboard.json"
+	const scoreboardPath = "/prod/v1/%s/scoreboard.json"
 	return fmt.Sprintf(scoreboardPath, u.date())
 }
 

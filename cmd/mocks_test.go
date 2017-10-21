@@ -24,7 +24,7 @@ func newFixtureHandlerFunc() http.HandlerFunc {
 		var filename string
 
 		switch r.URL.Path {
-		case "/data/10s/prod/v1/20170609/scoreboard.json":
+		case "/prod/v1/20170609/scoreboard.json":
 			filename = "fixtures/scoreboard.json"
 		case "/prod/v1/20170609/0041600404_pbp_1.json":
 			filename = "fixtures/pbp_1.json"
