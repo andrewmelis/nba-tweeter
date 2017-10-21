@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/andrewmelis/nba-tweeter/game"
+	"github.com/andrewmelis/nba-tweeter/processor"
 	"github.com/andrewmelis/nba-tweeter/watcher"
 )
 
@@ -16,7 +17,7 @@ func TestFollowStartsWatcherForEachActiveGame(t *testing.T) {
 	games.Games[len(games.Games)-1].Active = false // set last one to be inactive
 
 	s := newFakeSchedule(games)
-	f := NewNBAFollower()
+	f := NewNBAFollower(processor.ProcessorForGame)
 
 	hookCh := make(chan struct{})
 	followHook = func() { <-hookCh }

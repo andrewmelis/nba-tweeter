@@ -11,12 +11,14 @@ import (
 
 type NBAFollower struct {
 	watchedGames sync.Map
+	pf           processor.ProcessorFactory
 }
 
-func NewNBAFollower() *NBAFollower {
+func NewNBAFollower(pf processor.ProcessorFactory) *NBAFollower {
 	m := sync.Map{}
 	return &NBAFollower{
 		watchedGames: m,
+		pf:           pf,
 	}
 }
 
@@ -40,7 +42,7 @@ func (f *NBAFollower) Follow(s schedule.Schedule) {
 }
 
 func (f *NBAFollower) watchGame(g game.Game) {
-	p := processor.NewDebugProcessor() // FIXME
+	p := f.pf(g)
 	w := NewNBAWatcher(p, func(string) {})
 
 	// need to somehow ensure both start? i.e., transaction?
