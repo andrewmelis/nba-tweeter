@@ -10,16 +10,18 @@ import (
 )
 
 type NBAWatcher struct {
-	p         processor.Processor
-	seenPlays []play.Play
-	cb        func(string)
+	p                processor.Processor
+	seenPlays        map[string]bool
+	orderedSeenPlays []play.Play
+	cb               func(string)
 }
 
 func NewNBAWatcher(p processor.Processor, cb func(string)) *NBAWatcher {
 	return &NBAWatcher{
-		p:         p,
-		seenPlays: make([]play.Play, 0),
-		cb:        cb,
+		p:                p,
+		seenPlays:        make(map[string]bool),
+		orderedSeenPlays: make([]play.Play, 0),
+		cb:               cb,
 	}
 }
 
@@ -36,15 +38,7 @@ func (w *NBAWatcher) Watch(g game.Game) {
 			code := g.GameCode()
 			gameStillActive := g.IsActive()
 
-			inputs := g.Plays()
-			inputs = unique(inputs)
-
-			for i, play := range inputs {
-				if i >= len(w.seenPlays) {
-					w.seenPlays = append(w.seenPlays, play)
-					w.p.Process(code, play)
-				}
-			}
+			w.processNewPlays(code, g.Plays())
 
 			// log.Printf("Watch: before watchhook")
 			WatchHook()
@@ -59,16 +53,13 @@ func (w *NBAWatcher) Watch(g game.Game) {
 	}()
 }
 
-func unique(in []play.Play) []play.Play {
-	found := make(map[string]bool)
-	out := make([]play.Play, 0)
-
+func (w *NBAWatcher) processNewPlays(gamecode string, in []play.Play) {
 	for _, candidate := range in {
-		if found[candidate.String()] {
+		if w.seenPlays[candidate.String()] {
 			continue
 		}
-		found[candidate.String()] = true
-		out = append(out, candidate)
+		w.orderedSeenPlays = append(w.orderedSeenPlays, candidate)
+		w.seenPlays[candidate.String()] = true
+		w.p.Process(gamecode, candidate)
 	}
-	return out
 }
