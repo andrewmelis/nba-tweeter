@@ -10,7 +10,3 @@ import (
 type Watcher interface {
 	Watch(game.Game) // should return err?
 }
-
-// TODO!!!!!!!!!
-// <Something> ensures that each active game in the followed schedule
-// is being watched. It checks for active games every <period>.
