@@ -1,6 +1,7 @@
 package nba
 
 import (
+	_ "log"
 	"time"
 
 	"github.com/andrewmelis/nba-tweeter/game"
@@ -12,7 +13,6 @@ type NBAWatcher struct {
 	p         processor.Processor
 	seenPlays map[string][]play.Play
 	cb        func(string)
-	watchHook func()
 }
 
 func NewNBAWatcher(p processor.Processor, cb func(string)) *NBAWatcher {
@@ -20,15 +20,18 @@ func NewNBAWatcher(p processor.Processor, cb func(string)) *NBAWatcher {
 		p:         p,
 		seenPlays: make(map[string][]play.Play),
 		cb:        cb,
-		watchHook: func() {},
 	}
 }
+
+var WatchHook func() = func() {}
 
 func (w *NBAWatcher) Watch(g game.Game) {
 	go func() {
 		t := NewTicker(10 * time.Second)
 		for range t.C {
-			// update game here! // TODO
+			// log.Printf("Watch: refreshing game %#v", g)
+			g.Refresh()
+			// log.Printf("Watch: refreshed game %#v", g)
 
 			code := g.GameCode()
 			gameStillActive := g.IsActive()
@@ -43,8 +46,11 @@ func (w *NBAWatcher) Watch(g game.Game) {
 				}
 			}
 
-			w.watchHook()
+			// log.Printf("Watch: before watchhook")
+			WatchHook()
+			// log.Printf("Watch: refreshed game %s", g.GameCode())
 			if !gameStillActive {
+				// log.Printf("Watch: firing game over callback %s", g.GameCode())
 				w.cb(code)
 				t.Stop()
 				return

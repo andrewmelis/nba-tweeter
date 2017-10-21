@@ -25,7 +25,7 @@ func TestWatchProcessesEachPlayOfGameOnce(t *testing.T) {
 	w := NewNBAWatcher(p, func(string) {})
 
 	hookCh := make(chan struct{})
-	w.watchHook = func() { <-hookCh }
+	WatchHook = func() { <-hookCh }
 
 	w.Watch(game)
 	advanceTimeCh <- Now().Add(10 * time.Second)
@@ -63,7 +63,7 @@ func TestWatchProcessesPeriodically(t *testing.T) {
 	w := NewNBAWatcher(p, func(string) {})
 
 	hookCh := make(chan struct{})
-	w.watchHook = func() { <-hookCh }
+	WatchHook = func() { <-hookCh }
 
 	w.Watch(game)
 	advanceTimeCh <- Now().Add(10 * time.Second)
@@ -104,6 +104,29 @@ func TestWatchProcessesPeriodically(t *testing.T) {
 	}
 }
 
+func TestWatchUpdatesGameDetails(t *testing.T) {
+	game := newFakeGame("GSWCLE", []play.Play{})
+	setupNow()
+
+	advanceTimeCh := setupTicker()
+	cb := fakeCallback{}
+
+	p := processor.NewDebugProcessor()
+	w := NewNBAWatcher(p, cb.cb)
+
+	hookCh := make(chan struct{})
+	WatchHook = func() { <-hookCh }
+
+	w.Watch(game)
+
+	advanceTimeCh <- Now().Add(10 * time.Second)
+	hookCh <- struct{}{} // wait for one iteration
+
+	if !game.wasRefreshCalled {
+		t.Errorf("Expected game to refresh itself")
+	}
+}
+
 func TestWatchStopsProcessesingWhenGameIsOver(t *testing.T) {
 	plays := []play.Play{
 		fakePlay{"play 1"},
@@ -122,7 +145,7 @@ func TestWatchStopsProcessesingWhenGameIsOver(t *testing.T) {
 	w := NewNBAWatcher(p, cb.cb)
 
 	hookCh := make(chan struct{})
-	w.watchHook = func() { <-hookCh }
+	WatchHook = func() { <-hookCh }
 
 	w.Watch(game)
 	game.setActive(false)
@@ -149,13 +172,14 @@ func TestWatchStopsProcessesingWhenGameIsOver(t *testing.T) {
 }
 
 type fakeGame struct {
-	code   string
-	plays  []play.Play
-	active bool
+	code             string
+	plays            []play.Play
+	active           bool
+	wasRefreshCalled bool
 }
 
 func newFakeGame(gamecode string, plays []play.Play) *fakeGame {
-	return &fakeGame{gamecode, plays, true}
+	return &fakeGame{gamecode, plays, true, false}
 }
 
 func (g *fakeGame) GameCode() string {
@@ -172,6 +196,10 @@ func (g *fakeGame) IsActive() bool {
 
 func (g *fakeGame) setActive(b bool) {
 	g.active = b
+}
+
+func (g *fakeGame) Refresh() {
+	g.wasRefreshCalled = true
 }
 
 type fakePlay struct {
