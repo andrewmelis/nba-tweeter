@@ -10,12 +10,14 @@ import (
 	"github.com/andrewmelis/nba-tweeter/play"
 )
 
-var baseURL = "https://data.nba.net/"
+var BaseURL = "https://data.nba.net"
 
 type NBAGames struct {
 	Games []*NBAGame `json:"games"`
 }
 
+// possible improvement:
+// user <gameid>_mini_boxscore endpoint to have game update self
 type NBAGame struct {
 	Id        string    `json:"gameId"`
 	StartTime time.Time `json:"startTimeUTC"`
@@ -23,6 +25,10 @@ type NBAGame struct {
 	Home      NBATeam   `json:"hTeam"`
 	Period    Period    `json:"period"`
 	Active    bool      `json:"isGameActivated"`
+}
+
+type NBABoxScore struct {
+	Game *NBAGame `json:"basicGameData"`
 }
 
 type NBATeam struct {
@@ -39,6 +45,34 @@ func (g *NBAGame) GameCode() string {
 
 func (g *NBAGame) IsActive() bool {
 	return g.Active
+}
+
+func (g *NBAGame) Refresh() {
+	resp, err := http.Get(g.gameURL())
+	if err != nil {
+		log.Printf("error refreshing game: %s\n", err) // TODO
+		return
+	}
+	defer resp.Body.Close()
+
+	dec := json.NewDecoder(resp.Body)
+
+	var updatedGame NBABoxScore
+	for dec.More() {
+		err := dec.Decode(&updatedGame)
+		if err != nil {
+			log.Printf("error decoding game: %s\n", err) // TODO
+			return
+		}
+	}
+
+	if updatedGame.Game == nil {
+		return
+	}
+
+	g.Active = updatedGame.Game.Active
+	g.Period.Current = updatedGame.Game.Period.Current
+
 }
 
 func (g *NBAGame) Plays() []play.Play {
@@ -72,12 +106,21 @@ func (g *NBAGame) hydrateNBAPlays(plays NBAPlays) {
 	}
 }
 
+func (g *NBAGame) gameURL() string {
+	return fmt.Sprintf("%s%s", BaseURL, g.gamePath())
+}
+
+func (g *NBAGame) gamePath() string {
+	const gamePath = "/prod/v1/%s/%s_mini_boxscore.json"
+	return fmt.Sprintf(gamePath, g.gameDate(), g.Id)
+}
+
 func (g *NBAGame) pbpURL() string {
-	return fmt.Sprintf("%s%s", baseURL, g.pbpPath())
+	return fmt.Sprintf("%s%s", BaseURL, g.pbpPath())
 }
 
 func (g *NBAGame) pbpPath() string {
-	const pbpPath = "/data/10s/prod/v1/%s/%s_pbp_%d.json"
+	const pbpPath = "/prod/v1/%s/%s_pbp_%d.json"
 	return fmt.Sprintf(pbpPath, g.gameDate(), g.Id, g.Period.Current)
 }
 

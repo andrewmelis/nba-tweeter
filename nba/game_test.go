@@ -26,27 +26,50 @@ func newNBAGame(code string) *NBAGame {
 	homeCode := code[3:]
 	home := NBATeam{homeCode}
 
-	return &NBAGame{Visitor: visitor, Home: home, Active: true}
+	return &NBAGame{
+		Id:        "0041600404",
+		StartTime: makeTime("20170609 7:30pm", "US/Eastern"),
+		Visitor:   visitor,
+		Home:      home,
+		Active:    true,
+		Period: Period{
+			Current: 1,
+		},
+	}
+}
+
+func TestGameRefresh(t *testing.T) {
+	ts := httptest.NewServer(newPbpFixtureHandlerFunc())
+	defer ts.Close()
+
+	BaseURL = ts.URL
+
+	g := newNBAGame("WASCLE")
+	g.Refresh()
+
+	if g.Period.Current != 4 {
+		t.Errorf("Expected game period to be updated to %d, got %d", 4, g.Period.Current)
+	}
+	if g.Active {
+		t.Errorf("Expected game to be updated to inactive, got %t", g.Active)
+	}
 }
 
 func TestPlaysRetrieval(t *testing.T) {
 	ts := httptest.NewServer(newPbpFixtureHandlerFunc())
 	defer ts.Close()
 
-	baseURL = ts.URL
+	BaseURL = ts.URL
 
 	g := newNBAGame("GSWCLE")
-	g.Period.Current = 4
-	g.StartTime = makeTime("20170609 7:30pm", "US/Eastern")
-	g.Id = "0041600404"
 
 	expectedPlays := []string{
 		`CLE - Williams Turnover : Lost Ball (1 TO) Steal:Green (2 ST)
 [GSW 96 - 115 CLE]
-[11:50 Q4]`,
+[11:50 Q1]`,
 		`GSW - McCaw 3pt Shot: Made (3 PTS) Assist: K Thompson (2 AST)
 [GSW 99 - 115 CLE]
-[11:21 Q4]`,
+[11:21 Q1]`,
 	}
 	actualPlays := g.Plays()
 
@@ -61,15 +84,17 @@ func TestPlaysRetrieval(t *testing.T) {
 			t.Errorf("Wanted: %s, Got: %s", expectedPlay, actualPlay)
 		}
 	}
-
 }
 
 func newPbpFixtureHandlerFunc() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var filename string
+
 		switch r.URL.Path {
-		case "/data/10s/prod/v1/20170609/0041600404_pbp_4.json":
+		case "/prod/v1/20170609/0041600404_pbp_1.json":
 			filename = "fixtures/pbp.json"
+		case "/prod/v1/20170609/0041600404_mini_boxscore.json":
+			filename = "fixtures/mini_boxscore.json"
 		}
 		contents, err := ioutil.ReadFile(filename)
 

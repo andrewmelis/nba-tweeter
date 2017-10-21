@@ -10,4 +10,5 @@ type Game interface {
 	GameCode() string // TODO make gamecode a type?
 	Plays() []play.Play
 	IsActive() bool
+	Refresh()
 }
