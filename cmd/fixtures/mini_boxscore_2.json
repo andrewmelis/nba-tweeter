@@ -1,0 +1,253 @@
+{
+  "_internal": {
+    "pubDateTime": "2017-07-10 04:00:19.162",
+    "xslt": "xsl/game/boxscore/marty_mini_boxscore.xsl",
+    "eventName": "preview_recap_update"
+  },
+  "basicGameData": {
+    "seasonStageId": 4,
+    "seasonYear": "2016",
+    "gameId": "0041600404",
+    "isGameActivated": true,
+    "statusNum": 3,
+    "extendedStatusNum": 0,
+    "startTimeUTC": "2017-06-10T01:00:00.000Z",
+    "startDateEastern": "20170609",
+    "clock": "",
+    "isBuzzerBeater": false,
+    "isPreviewArticleAvail": false,
+    "isRecapArticleAvail": false,
+    "tickets": {
+      "mobileApp": "",
+      "desktopWeb": "",
+      "mobileWeb": ""
+    },
+    "hasGameBookPdf": true,
+    "isStartTimeTBD": false,
+    "nugget": {
+      "text": "Kyrie scores 40, LeBron grabs triple-double"
+    },
+    "attendance": "20562",
+    "gameDuration": {
+      "hours": "2",
+      "minutes": "51"
+    },
+    "tags": [
+      "Finals"
+    ],
+    "playoffs": {
+      "roundNum": "4",
+      "confName": "",
+      "seriesId": "40",
+      "seriesSummaryText": "Series 0-0",
+      "isSeriesCompleted": false,
+      "gameNumInSeries": "4",
+      "isIfNecessary": false,
+      "vTeam": {
+        "seedNum": "1",
+        "seriesWin": "0",
+        "isSeriesWinner": false
+      },
+      "hTeam": {
+        "seedNum": "2",
+        "seriesWin": "0",
+        "isSeriesWinner": false
+      }
+    },
+    "period": {
+      "current": 2,
+      "type": 0,
+      "maxRegular": 4,
+      "isHalftime": false,
+      "isEndOfPeriod": false
+    },
+    "vTeam": {
+      "teamId": "1610612744",
+      "triCode": "GSW",
+      "win": "67",
+      "loss": "15",
+      "seriesWin": "3",
+      "seriesLoss": "0",
+      "score": "116",
+      "linescore": [
+        {
+          "score": "33"
+        },
+        {
+          "score": "35"
+        },
+        {
+          "score": "28"
+        },
+        {
+          "score": "20"
+        }
+      ]
+    },
+    "hTeam": {
+      "teamId": "1610612739",
+      "triCode": "CLE",
+      "win": "51",
+      "loss": "31",
+      "seriesWin": "0",
+      "seriesLoss": "3",
+      "score": "137",
+      "linescore": [
+        {
+          "score": "49"
+        },
+        {
+          "score": "37"
+        },
+        {
+          "score": "29"
+        },
+        {
+          "score": "22"
+        }
+      ]
+    },
+    "watch": {
+      "broadcast": {
+        "broadcasters": {
+          "national": [
+            {
+              "shortName": "ABC",
+              "longName": "American Broadcasting Company"
+            }
+          ],
+          "canadian": [
+            {
+              "shortName": "TSN",
+              "longName": "TSN"
+            }
+          ],
+          "vTeam": [],
+          "hTeam": []
+        },
+        "video": {
+          "regionalBlackoutCodes": "",
+          "canPurchase": false,
+          "isLeaguePass": true,
+          "isTNTOT": false,
+          "isVR": false,
+          "tntotIsOnAir": false,
+          "streams": [
+            {
+              "streamType": "vTeam",
+              "isOnAir": false,
+              "doesArchiveExist": false,
+              "isArchiveAvailToWatch": false,
+              "streamId": "",
+              "duration": 0
+            },
+            {
+              "streamType": "hTeam",
+              "isOnAir": false,
+              "doesArchiveExist": true,
+              "isArchiveAvailToWatch": true,
+              "streamId": "100416004041120",
+              "duration": 8172
+            },
+            {
+              "streamType": "mobile",
+              "isOnAir": false,
+              "doesArchiveExist": true,
+              "isArchiveAvailToWatch": true,
+              "streamId": "100416004041320",
+              "duration": 8163
+            },
+            {
+              "streamType": "condensed",
+              "isOnAir": false,
+              "doesArchiveExist": true,
+              "isArchiveAvailToWatch": true,
+              "streamId": "100416004041030",
+              "duration": 0
+            }
+          ],
+          "deepLink": [
+            {
+              "broadcaster": "ABC",
+              "regionalMarketCodes": "",
+              "iosApp": "http://es.pn/2rqLKpu",
+              "androidApp": "http://es.pn/2rqLKpu",
+              "desktopWeb": "http://es.pn/2rqLKpu",
+              "mobileWeb": "http://es.pn/2rqLKpu"
+            }
+          ]
+        },
+        "audio": {
+          "national": {
+            "streams": [
+              {
+                "language": "English",
+                "isOnAir": false,
+                "streamId": ""
+              },
+              {
+                "language": "Spanish",
+                "isOnAir": false,
+                "streamId": ""
+              }
+            ],
+            "broadcasters": []
+          },
+          "vTeam": {
+            "streams": [
+              {
+                "language": "English",
+                "isOnAir": true,
+                "streamId": "100416004042211"
+              },
+              {
+                "language": "Spanish",
+                "isOnAir": false,
+                "streamId": ""
+              }
+            ],
+            "broadcasters": [
+              {
+                "shortName": "95.7 The Game",
+                "longName": "95.7 The Game"
+              }
+            ]
+          },
+          "hTeam": {
+            "streams": [
+              {
+                "language": "English",
+                "isOnAir": true,
+                "streamId": "100416004042111"
+              },
+              {
+                "language": "Spanish",
+                "isOnAir": true,
+                "streamId": "100416004042112"
+              }
+            ],
+            "broadcasters": [
+              {
+                "shortName": "WTAM 1100 / 87.7 FM (ESP)",
+                "longName": "WTAM 1100 / 87.7 FM (ESP)"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "officials": {
+      "formatted": [
+        {
+          "firstNameLastName": "Mike Callahan"
+        },
+        {
+          "firstNameLastName": "Marc Davis"
+        },
+        {
+          "firstNameLastName": "John Goble"
+        }
+      ]
+    }
+  }
+}

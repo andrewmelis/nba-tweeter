@@ -10,7 +10,7 @@
       "seasonStageId": 4,
       "seasonYear": "2016",
       "gameId": "0041600404",
-      "isGameActivated": false,
+      "isGameActivated": true,
       "statusNum": 3,
       "extendedStatusNum": 0,
       "startTimeUTC": "2017-06-10T01:00:00.000Z",
@@ -57,7 +57,7 @@
         }
       },
       "period": {
-        "current": 4,
+        "current": 1,
         "type": 0,
         "maxRegular": 4,
         "isHalftime": false,
