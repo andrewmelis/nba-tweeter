@@ -2,25 +2,29 @@ package nba
 
 import (
 	"testing"
+	"time"
 
-	"github.com/andrewmelis/nba-tweeter/clock"
 	"github.com/andrewmelis/nba-tweeter/game"
 	"github.com/andrewmelis/nba-tweeter/watcher"
 )
 
 func TestFollowStartsWatcherForEachActiveGame(t *testing.T) {
-	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
-	clock := clock.NewFakeClock(now)
+	setupNow()
+	advanceTimeCh := setupTicker()
 
 	games := fakeNBAGames("OKCBOS", "GSWCLE", "SASHOU")
 	games.Games[len(games.Games)-1].Active = false // set last one to be inactive
 
 	s := newFakeSchedule(games)
-	f := NewNBAFollower(clock)
+	f := NewNBAFollower()
+
+	hookCh := make(chan struct{})
+	f.followHook = func() { <-hookCh }
 
 	f.Follow(s)
 
-	clock.Advance()
+	advanceTimeCh <- Now().Add(10 * time.Second)
+	hookCh <- struct{}{}
 
 	for i, game := range games.Games {
 		w, ok := f.watchedGames.Load(game.GameCode())
@@ -44,7 +48,8 @@ func TestFollowStartsWatcherForEachActiveGame(t *testing.T) {
 	secondSetGames := fakeNBAGames("OKCBOS", "GSWCLE", "SASHOU") // all active
 	s.games = secondSetGames                                     // intentionally replace references
 
-	clock.Advance()
+	advanceTimeCh <- Now().Add(10 * time.Second)
+	hookCh <- struct{}{}
 
 	for _, game := range secondSetGames.Games {
 		w, ok := f.watchedGames.Load(game.GameCode())
@@ -62,7 +67,8 @@ func TestFollowStartsWatcherForEachActiveGame(t *testing.T) {
 	thirdSetGames.Games[0].Active = false // set last one to be inactive
 	s.games = thirdSetGames               // intentionally replace references
 
-	clock.Advance()
+	advanceTimeCh <- Now().Add(10 * time.Second)
+	hookCh <- struct{}{}
 
 	for i, game := range thirdSetGames.Games {
 		w, ok := f.watchedGames.Load(game.GameCode())

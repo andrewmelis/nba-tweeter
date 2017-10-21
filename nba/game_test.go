@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/andrewmelis/nba-tweeter/clock"
 )
 
 func TestGameCode(t *testing.T) {
@@ -39,7 +37,7 @@ func TestPlaysRetrieval(t *testing.T) {
 
 	g := newNBAGame("GSWCLE")
 	g.Period.Current = 4
-	g.StartTime = clock.MakeTime("20170609 7:30pm", "US/Eastern")
+	g.StartTime = makeTime("20170609 7:30pm", "US/Eastern")
 	g.Id = "0041600404"
 
 	expectedPlays := []string{

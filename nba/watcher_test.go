@@ -2,8 +2,8 @@ package nba
 
 import (
 	"testing"
+	"time"
 
-	"github.com/andrewmelis/nba-tweeter/clock"
 	"github.com/andrewmelis/nba-tweeter/play"
 	"github.com/andrewmelis/nba-tweeter/processor"
 )
@@ -18,14 +18,19 @@ func TestWatchProcessesEachPlayOfGameOnce(t *testing.T) {
 	}
 	game := newFakeGame("GSWCLE", playsWithDup)
 
-	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
-	c := clock.NewFakeClock(now)
+	setupNow()
+	advanceTimeCh := setupTicker()
 
 	p := processor.NewDebugProcessor()
-	w := NewNBAWatcher(c, p, func(string) {})
+	w := NewNBAWatcher(p, func(string) {})
+
+	hookCh := make(chan struct{})
+	w.watchHook = func() { <-hookCh }
 
 	w.Watch(game)
-	c.Advance()
+	advanceTimeCh <- Now().Add(10 * time.Second)
+
+	hookCh <- struct{}{} // wait for one iteration
 
 	expected := append(playsWithDup[:3], playsWithDup[4:]...) // delete duplicate
 	actual := p.Plays(game.GameCode())
@@ -51,14 +56,19 @@ func TestWatchProcessesPeriodically(t *testing.T) {
 
 	game := newFakeGame("GSWCLE", plays)
 
-	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
-	c := clock.NewFakeClock(now)
+	setupNow()
+	advanceTimeCh := setupTicker()
 
 	p := processor.NewDebugProcessor()
-	w := NewNBAWatcher(c, p, func(string) {})
+	w := NewNBAWatcher(p, func(string) {})
+
+	hookCh := make(chan struct{})
+	w.watchHook = func() { <-hookCh }
 
 	w.Watch(game)
-	c.Advance()
+	advanceTimeCh <- Now().Add(10 * time.Second)
+
+	hookCh <- struct{}{} // wait for one iteration
 
 	expected := plays
 	actual := p.Plays(game.GameCode())
@@ -77,7 +87,8 @@ func TestWatchProcessesPeriodically(t *testing.T) {
 	newPlay := fakePlay{"play 5"}
 	game.plays = append(game.plays, newPlay)
 
-	c.Advance()
+	advanceTimeCh <- Now().Add(10 * time.Second)
+	hookCh <- struct{}{} // wait for one iteration
 
 	expected = append(expected, newPlay)
 	actual = p.Plays(game.GameCode())
@@ -93,7 +104,7 @@ func TestWatchProcessesPeriodically(t *testing.T) {
 	}
 }
 
-func TestStopsProcessesingWhenGameIsOver(t *testing.T) {
+func TestWatchStopsProcessesingWhenGameIsOver(t *testing.T) {
 	plays := []play.Play{
 		fakePlay{"play 1"},
 		fakePlay{"play 2"},
@@ -103,16 +114,21 @@ func TestStopsProcessesingWhenGameIsOver(t *testing.T) {
 
 	game := newFakeGame("GSWCLE", plays)
 
-	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
-	c := clock.NewFakeClock(now)
+	setupNow()
+	advanceTimeCh := setupTicker()
 	cb := fakeCallback{}
 
 	p := processor.NewDebugProcessor()
-	w := NewNBAWatcher(c, p, cb.cb)
+	w := NewNBAWatcher(p, cb.cb)
+
+	hookCh := make(chan struct{})
+	w.watchHook = func() { <-hookCh }
 
 	w.Watch(game)
 	game.setActive(false)
-	c.Advance()
+
+	advanceTimeCh <- Now().Add(10 * time.Second)
+	hookCh <- struct{}{} // wait for one iteration
 
 	// it still gets all plays
 	expected := plays

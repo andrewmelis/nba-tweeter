@@ -2,8 +2,8 @@ package nba
 
 import (
 	"sync"
+	"time"
 
-	"github.com/andrewmelis/nba-tweeter/clock"
 	"github.com/andrewmelis/nba-tweeter/game"
 	"github.com/andrewmelis/nba-tweeter/processor"
 	"github.com/andrewmelis/nba-tweeter/schedule"
@@ -11,17 +11,21 @@ import (
 
 type NBAFollower struct {
 	watchedGames sync.Map
-	c            clock.Clock
+	followHook   func()
 }
 
-func NewNBAFollower(c clock.Clock) *NBAFollower {
+func NewNBAFollower() *NBAFollower {
 	m := sync.Map{}
-	return &NBAFollower{m, c}
+	return &NBAFollower{
+		watchedGames: m,
+		followHook:   func() {},
+	}
 }
 
 func (f *NBAFollower) Follow(s schedule.Schedule) {
 	go func() {
-		for range f.c.Ticker() {
+		t := NewTicker(10 * time.Second)
+		for range t.C {
 			for _, game := range s.Games() {
 				switch {
 				case game.IsActive() && !f.isBeingWatched(game):
@@ -30,17 +34,14 @@ func (f *NBAFollower) Follow(s schedule.Schedule) {
 					f.removeGame(game) // probably should use callback from watcher
 				}
 			}
+			f.followHook()
 		}
 	}() // should i be passing args in to this anon func?
 }
 
 func (f *NBAFollower) watchGame(g game.Game) {
-	// inject clock somehow
-	now := clock.MakeTime("20170609 7:30pm", "US/Eastern")
-	clock := clock.NewFakeClock(now)
-
 	p := processor.NewDebugProcessor() // FIXME
-	w := NewNBAWatcher(clock, p, func(string) {})
+	w := NewNBAWatcher(p, func(string) {})
 
 	// need to somehow ensure both start? i.e., transaction?
 	w.Watch(g)

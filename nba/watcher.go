@@ -1,34 +1,34 @@
 package nba
 
 import (
-	_ "fmt"
+	"time"
 
-	"github.com/andrewmelis/nba-tweeter/clock"
 	"github.com/andrewmelis/nba-tweeter/game"
 	"github.com/andrewmelis/nba-tweeter/play"
 	"github.com/andrewmelis/nba-tweeter/processor"
 )
 
 type NBAWatcher struct {
-	c         clock.Clock
 	p         processor.Processor
 	seenPlays map[string][]play.Play
 	cb        func(string)
+	watchHook func()
 }
 
-func NewNBAWatcher(c clock.Clock, p processor.Processor, cb func(string)) *NBAWatcher {
+func NewNBAWatcher(p processor.Processor, cb func(string)) *NBAWatcher {
 	return &NBAWatcher{
-		c:         c,
 		p:         p,
 		seenPlays: make(map[string][]play.Play),
 		cb:        cb,
+		watchHook: func() {},
 	}
 }
 
 func (w *NBAWatcher) Watch(g game.Game) {
 	go func() {
-		for range w.c.Ticker() {
-			// consider updating game here?
+		t := NewTicker(10 * time.Second)
+		for range t.C {
+			// update game here! // TODO
 
 			code := g.GameCode()
 			gameStillActive := g.IsActive()
@@ -43,8 +43,10 @@ func (w *NBAWatcher) Watch(g game.Game) {
 				}
 			}
 
+			w.watchHook()
 			if !gameStillActive {
 				w.cb(code)
+				t.Stop()
 				return
 			}
 		}

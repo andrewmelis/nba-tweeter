@@ -2,8 +2,6 @@ package nba
 
 import (
 	"fmt"
-
-	"github.com/andrewmelis/nba-tweeter/clock"
 )
 
 type ScheduleURL interface {
@@ -12,11 +10,10 @@ type ScheduleURL interface {
 
 type NBAScheduleURL struct {
 	baseURL string
-	c       clock.Clock
 }
 
-func NewNBAScheduleURL(baseURL string, c clock.Clock) ScheduleURL {
-	return NBAScheduleURL{baseURL, c}
+func NewNBAScheduleURL(baseURL string) ScheduleURL {
+	return NBAScheduleURL{baseURL}
 }
 
 func (u NBAScheduleURL) URL() string {
@@ -36,5 +33,5 @@ func (u NBAScheduleURL) scoreboardPath() string {
 }
 
 func (u NBAScheduleURL) date() string {
-	return u.c.Now().Format("20060102")
+	return Now().Format("20060102")
 }
