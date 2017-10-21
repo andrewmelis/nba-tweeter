@@ -72,7 +72,7 @@ func (r fakeScheduleURL) URL() string {
 }
 
 func TestScheduleRetrieval(t *testing.T) {
-	ts := httptest.NewServer(newScheduleFixtureHandlerFunc("fixtures/schedule.json"))
+	ts := httptest.NewServer(newScheduleFixtureHandlerFunc("fixtures/scoreboard.json"))
 	defer ts.Close()
 
 	r := newFakeScheduleURL(ts.URL)
