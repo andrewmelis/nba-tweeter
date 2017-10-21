@@ -11,16 +11,16 @@ import (
 
 type NBAFollower struct {
 	watchedGames sync.Map
-	followHook   func()
 }
 
 func NewNBAFollower() *NBAFollower {
 	m := sync.Map{}
 	return &NBAFollower{
 		watchedGames: m,
-		followHook:   func() {},
 	}
 }
+
+var followHook func() = func() {}
 
 func (f *NBAFollower) Follow(s schedule.Schedule) {
 	go func() {
@@ -34,7 +34,7 @@ func (f *NBAFollower) Follow(s schedule.Schedule) {
 					f.removeGame(game) // probably should use callback from watcher
 				}
 			}
-			f.followHook()
+			followHook()
 		}
 	}() // should i be passing args in to this anon func?
 }

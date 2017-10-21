@@ -19,7 +19,7 @@ func TestFollowStartsWatcherForEachActiveGame(t *testing.T) {
 	f := NewNBAFollower()
 
 	hookCh := make(chan struct{})
-	f.followHook = func() { <-hookCh }
+	followHook = func() { <-hookCh }
 
 	f.Follow(s)
 
