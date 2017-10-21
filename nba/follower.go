@@ -1,7 +1,6 @@
 package nba
 
 import (
-	_ "log"
 	"sync"
 	"time"
 
@@ -29,21 +28,15 @@ func (f *NBAFollower) Follow(s schedule.Schedule) {
 	go func() {
 		t := NewTicker(10 * time.Second)
 		for range t.C {
-			// log.Printf("Follow: retrieving schedule")
 			for _, game := range s.Games() {
-				// log.Printf("Follow: switching game %s", game.GameCode())
 				switch {
 				case game.IsActive() && !f.isBeingWatched(game):
-					// log.Printf("Follow: start watching game %s", game.GameCode())
 					f.watchGame(game)
 				case !game.IsActive() && f.isBeingWatched(game):
-					// log.Printf("Follow: removing game %s", game.GameCode())
 					f.removeGame(game) // probably should use callback from watcher
 				}
 			}
-			// log.Printf("Follow: firing followHook")
 			followHook()
-			// log.Printf("Follow: after firing followHook")
 		}
 	}() // should i be passing args in to this anon func?
 }

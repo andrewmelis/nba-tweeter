@@ -1,7 +1,6 @@
 package nba
 
 import (
-	_ "log"
 	"time"
 
 	"github.com/andrewmelis/nba-tweeter/game"
@@ -31,20 +30,15 @@ func (w *NBAWatcher) Watch(g game.Game) {
 	go func() {
 		t := NewTicker(10 * time.Second)
 		for range t.C {
-			// log.Printf("Watch: refreshing game %#v", g)
 			g.Refresh()
-			// log.Printf("Watch: refreshed game %#v", g)
 
 			code := g.GameCode()
 			gameStillActive := g.IsActive()
 
 			w.processNewPlays(code, g.Plays())
 
-			// log.Printf("Watch: before watchhook")
 			WatchHook()
-			// log.Printf("Watch: refreshed game %s", g.GameCode())
 			if !gameStillActive {
-				// log.Printf("Watch: firing game over callback %s", g.GameCode())
 				w.cb(code)
 				t.Stop()
 				return
