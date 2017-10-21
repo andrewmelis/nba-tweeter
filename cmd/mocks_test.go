@@ -19,8 +19,8 @@ func (r fakeScheduleURL) URL() string {
 }
 
 func newFixtureHandlerFunc() http.HandlerFunc {
+	var boxscoreCounter = 1
 	return func(w http.ResponseWriter, r *http.Request) {
-		// switch file based on call
 		var filename string
 
 		switch r.URL.Path {
@@ -34,6 +34,9 @@ func newFixtureHandlerFunc() http.HandlerFunc {
 			filename = "fixtures/pbp_3.json"
 		case "/prod/v1/20170609/0041600404_pbp_4.json":
 			filename = "fixtures/pbp_4.json"
+		case "/prod/v1/20170609/0041600404_mini_boxscore.json":
+			filename = fmt.Sprintf("fixtures/mini_boxscore_%d.json", boxscoreCounter)
+			boxscoreCounter += 1
 		}
 
 		contents, err := ioutil.ReadFile(filename)
