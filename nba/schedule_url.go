@@ -13,7 +13,7 @@ type NBAScheduleURL struct {
 }
 
 func NewNBAScheduleURL(baseURL string) ScheduleURL {
-	return NBAScheduleURL{baseURL}
+	return NBAScheduleURL{BaseURL}
 }
 
 func (u NBAScheduleURL) URL() string {
