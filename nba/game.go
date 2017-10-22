@@ -133,6 +133,10 @@ func (g *NBAGame) gameDate() string {
 	return g.StartTime.In(easternTime).Format("20060102")
 }
 
+func (g *NBAGame) String() string {
+	return g.GameCode()
+}
+
 func convertNBAPlaysToIPlays(plays NBAPlays) []play.Play {
 	var iPlays = make([]play.Play, len(plays.Plays))
 	for i, play := range plays.Plays {

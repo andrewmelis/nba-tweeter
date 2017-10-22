@@ -1,6 +1,7 @@
 package nba
 
 import (
+	"log"
 	"sync"
 	"time"
 
@@ -28,6 +29,7 @@ func (f *NBAFollower) Follow(s schedule.Schedule) {
 	go func() {
 		t := NewTicker(10 * time.Second)
 		for range t.C {
+			log.Printf("Refreshing schedule...\n")
 			for _, game := range s.Games() {
 				switch {
 				case game.IsActive() && !f.isBeingWatched(game):
@@ -46,12 +48,14 @@ func (f *NBAFollower) watchGame(g game.Game) {
 	w := NewNBAWatcher(p, func(string) {})
 
 	// need to somehow ensure both start? i.e., transaction?
+	log.Printf("Watching game: %s\n", g)
 	w.Watch(g)
 	f.watchedGames.Store(g.GameCode(), w)
 	// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 }
 
 func (f *NBAFollower) removeGame(g game.Game) {
+	log.Printf("Removing game: %s\n", g)
 	f.watchedGames.Delete(g.GameCode())
 }
 
